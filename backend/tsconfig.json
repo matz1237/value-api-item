@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                // Target modern ECMAScript version
+    "module": "commonjs",               // Use CommonJS modules for Node.js
+    "esModuleInterop": true,            // Allows default imports from CommonJS modules
+    "strict": true,                     // Enables strict type checking
+    "moduleResolution": "node",         // Ensures node module resolution
+    "outDir": "./dist",                 // Compiles files to the "dist" folder
+    "sourceMap": true,                  // Include source maps for debugging
+    "typeRoots": ["./node_modules/@types", "./types"]
+  },
+  "include": [
+      "./**/*.ts",
+      "types/**/*.d.ts"
+    ],             // Include all TypeScript files in the project
+  "exclude": ["node_modules"]           // Exclude dependencies from compilation
+}
