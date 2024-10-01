@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
 import passport from 'passport';
-import bcrypt from 'bcryptjs';
-import User from '../models/user';
+import User, { IUser } from '../models/user';
 
 
 const router = express.Router();
@@ -38,7 +37,7 @@ router.get('/logout', (req: Request, res: Response) => {
 
 // Middleware to check if the user is a superadmin
 const isSuperAdmin = (req: Request, res: Response, next: () => void) => {
-  if (req.user?.role === 'superadmin') {
+  if ((req.user as IUser)?.role === 'superadmin') {
     return next();
   }
   return res.status(403).json({ message: 'Access denied. Only superadmins can assign roles.' });

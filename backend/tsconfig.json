@@ -7,11 +7,10 @@
     "moduleResolution": "node",         // Ensures node module resolution
     "outDir": "./dist",                 // Compiles files to the "dist" folder
     "sourceMap": true,                  // Include source maps for debugging
-    "typeRoots": ["./node_modules/@types", "./types"]
+    "typeRoots": ["./node_modules/@types"]
   },
   "include": [
-      "./**/*.ts",
-      "types/**/*.d.ts"
+      "./**/*.ts"
     ],             // Include all TypeScript files in the project
   "exclude": ["node_modules"]           // Exclude dependencies from compilation
 }
