@@ -1,9 +1,9 @@
+//backend/models/porducts.ts
 import mongoose, { Schema } from 'mongoose';
 
 const productSchema = new Schema({
   name: { type: String, required: true },
-  price: { type: Number, required: true },
-  description: { type: String, required: true }
+  price: { type: Number, required: true }
   // Add other fields as needed
 });
 

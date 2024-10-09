@@ -1,3 +1,4 @@
+//backend/utils/createSuperAdmin.ts
 import User from '../models/user'; // Adjust path as necessary
 import bcrypt from 'bcryptjs';
 

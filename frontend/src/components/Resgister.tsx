@@ -1,4 +1,4 @@
-    // src/components/Register.tsx
+//frontend/src/components/Register.tsx
 import React, { useState } from 'react';
 import { register } from '../api';
 

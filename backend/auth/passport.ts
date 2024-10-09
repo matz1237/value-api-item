@@ -1,3 +1,4 @@
+//backend/auth/passport.ts
 import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import bcrypt from 'bcryptjs';
@@ -11,19 +12,19 @@ passport.use(
       const user = await User.findOne({ username }).lean();
 
       if (!user) {
-        return done(new Error('Username not found'), false);
+        return done(null, false, { message: 'Incorrect username.' });
       }
 
       // Compare the password with the hashed password in the database
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
-        return done(new Error('Incorrect password'), false);
+        return done(null, false, { message: 'Incorrect password.' });
       }
 
       return done(null, user as any);
     } catch (err) {
-      return done(new Error('An error occurred while authenticating'), false);
+      return done(err);
     }
   })
 );
@@ -33,7 +34,7 @@ passport.serializeUser((user: any, done) => {
   if (!user) {
     return done(new Error('User not found'), false);
   }
-  done(null, user._id);
+  done(null, user._id); 
 });
 
 // Deserialize user from the session

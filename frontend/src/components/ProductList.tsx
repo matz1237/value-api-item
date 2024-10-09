@@ -1,4 +1,4 @@
-// src/components/ProductList.tsx
+//frontend/src/components/ProductList.tsx
 import React, { useEffect, useState } from 'react';
 import { getProducts } from '../api';
 

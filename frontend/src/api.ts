@@ -1,4 +1,4 @@
-// src/api.ts
+//frontend/src/api.ts
 import axios from 'axios';
 
 const API_URL = 'http://127.0.0.1:3000/api';
@@ -31,7 +31,13 @@ export const login = async (username: string, password: string) => {
 export const logout = () => api.get('/auth/logout');
 
 export const assignRole = async (username: string, newRole: string) => {
-  return axios.post('/assign-role', { username, newRole });
+  try {
+    const response = await api.post('/auth/assign-role', { username, newRole });
+    return response.data;
+  } catch (error: any) {
+    console.error('Error assigning role:', error.response?.data || error.message);
+    throw error;
+  }
 };
 
 // Products endpoints

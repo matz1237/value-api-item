@@ -1,3 +1,4 @@
+//frontend/src/components/Auth.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, register } from '../api'; // Assuming these API functions are available
@@ -7,18 +8,24 @@ const Auth = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const setToken = (token: string) => {
+    localStorage.setItem('token', token);
+  };
   const [role, setRole] = useState('user');
   const navigate = useNavigate(); // Hook for navigation
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); 
     try {
       if (isRegistering) {
         await register(username, password, role);
         setErrorMessage('User registered successfully');
       } else {
-        await login(username, password);
+        const response = await login(username, password);
+        const token = response.data.token;
+        setToken(token);
+        localStorage.setItem('token', token);
         setErrorMessage('Logged in successfully');
         navigate('/dashboard'); // Redirect to dashboard or any other route after login
       }
@@ -29,8 +36,9 @@ const Auth = () => {
         setErrorMessage('Network error');
       }
     }
+    
   };
-
+  
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
       <div className="bg-white shadow-md rounded-lg p-8 max-w-md w-full mx-4 sm:mx-auto">
@@ -119,3 +127,7 @@ const Auth = () => {
 };
 
 export default Auth;
+function setToken(token: any) {
+  throw new Error('Function not implemented.');
+}
+
