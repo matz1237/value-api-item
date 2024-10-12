@@ -8,28 +8,34 @@ const Auth = () => {
   const [isRegistering, setIsRegistering] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('user');
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate(); // Hook for navigation
+
+  // Function to set token in local storage
   const setToken = (token: string) => {
     localStorage.setItem('token', token);
   };
-  const [role, setRole] = useState('user');
-  const navigate = useNavigate(); // Hook for navigation
-  const [errorMessage, setErrorMessage] = useState('');
-
+  
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); 
+    e.preventDefault(); // Prevent default form submission behavior
+    setErrorMessage(''); // Reset error message before submission
     try {
       if (isRegistering) {
         await register(username, password, role);
         setErrorMessage('User registered successfully');
       } else {
+        //handle login
         const response = await login(username, password);
+        console.log('Login response:', response);
         const token = response.data.token;
         setToken(token);
         localStorage.setItem('token', token);
         setErrorMessage('Logged in successfully');
-        navigate('/dashboard'); // Redirect to dashboard or any other route after login
+        navigate('/products'); // Redirect to dashboard or any other route after login
       }
     } catch (error: any) {
+      console.error('Error during authentication:', error); // Log the error for debugging
       if (error.response && error.response.data) {
         setErrorMessage(error.response.data.message || 'Error during authentication');
       } else {
@@ -127,7 +133,3 @@ const Auth = () => {
 };
 
 export default Auth;
-function setToken(token: any) {
-  throw new Error('Function not implemented.');
-}
-

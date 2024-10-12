@@ -42,13 +42,14 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+
 // Routes
 app.use('/api/auth', authRouter);
 app.use('/api/products', productsRouter);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err.stack);
+  console.error('Global error handler caught:', err.stack);
   res.status(500).send('Something broke!');
 });
 

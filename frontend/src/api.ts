@@ -1,16 +1,17 @@
 //frontend/src/api.ts
 import axios from 'axios';
 
-const API_URL = 'http://127.0.0.1:3000/api';
+const API_URL = process.env.REACT_APP_API_URL;
 
 export const api = axios.create({
   baseURL: API_URL,
+  withCredentials: true
 });
 
 // Auth endpoints
 export const register = async (username: string, password: string, role: string) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/register`, { username, password, role });
+    const response = await api.post('/auth/register', { username, password, role });
     return response.data;
   } catch (error: any) {
     console.error('Error during registration:', error.response?.data || error.message);
@@ -20,7 +21,7 @@ export const register = async (username: string, password: string, role: string)
 
 export const login = async (username: string, password: string) => {
   try {
-    const response = await axios.post(`${API_URL}/auth/login`, { username, password });
+    const response = await api.post('/auth/login', { username, password });
     return response.data;
   } catch (error: any) {
     console.error('Error during login:', error.response?.data || error.message);
