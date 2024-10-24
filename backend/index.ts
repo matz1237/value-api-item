@@ -40,7 +40,7 @@ app.use(session({
 
 // Initialize passport
 app.use(passport.initialize());
-app.use(passport.session());
+//app.use(passport.session());
 
 
 // Routes
@@ -48,10 +48,10 @@ app.use('/api/auth', authRouter);
 app.use('/api/products', productsRouter);
 
 // Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+/*app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Global error handler caught:', err.stack);
   res.status(500).send('Something broke!');
 });
-
+*/
 const PORT = process.env.PORT || 3000;
 app.listen(process.env.port, () => console.log(`Server listening on port 🚀 ${PORT}`))

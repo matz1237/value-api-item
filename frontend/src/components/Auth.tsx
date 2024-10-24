@@ -28,9 +28,11 @@ const Auth = () => {
         //handle login
         const response = await login(username, password);
         console.log('Login response:', response);
-        const token = response.data.token;
+        const token = response.token;
+
         setToken(token);
         localStorage.setItem('token', token);
+        
         setErrorMessage('Logged in successfully');
         navigate('/products'); // Redirect to dashboard or any other route after login
       }

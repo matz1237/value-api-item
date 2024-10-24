@@ -8,7 +8,10 @@
 
   const router = express.Router();
 
-  const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
+  const JWT_SECRET = process.env.JWT_SECRET;
+  if(!JWT_SECRET){
+    throw new Error('JWT_SECRET must be defined in environment variables');
+  }
 
   // Login route
   router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
@@ -24,9 +27,15 @@
         return res.status(401).json({ message: 'Authentication failed: Incorrect username or password' });
       }
       const token = jwt.sign(
-        { id: user._id, username: user.username, role: user.role },
-        JWT_SECRET,
-        { expiresIn: '1d' }
+        { id: user._id, 
+          username: user.username, 
+          role: user.role 
+        },
+          JWT_SECRET,
+        { 
+          expiresIn: '1d'
+        
+        }
       );
       return res.status(200).json({
         token,
@@ -35,40 +44,10 @@
       });
     }catch(err){
       console.error('Login Error:', err);
-      return res.status(500).json({ message: 'Internal server error', error: err.message });
+      return res.status(500).json({ message: 'Internal server error' });
     }
-
-    
-
-
-   /* passport.authenticate('local',{ session: false }, (err: Error, user: Express.User, info: { message: string }) => {
-      const userObj = user as IUser;
-      if (err) {
-        console.error('Authentication Error:', err);
-        return res.status(500).json({ message: 'Internal server error', error: err.message });
-      }
-      if (!user) {
-        return res.status(401).json({ message: info.message || 'Authentication failed' });
-      }
-      const token = jwt.sign(
-        { id: userObj._id, username: userObj.username, role: userObj.role },
-          JWT_SECRET,
-        { expiresIn: '1d' }
-        );
-
-      req.logIn(user, (err) => {
-        if (err) {  
-          console.error('Login Error:', err);
-          return res.status(500).json({ message: 'Error logging in', error: err.message });
-        }
-        return res.status(200).json({ 
-          token,
-          message: 'Logged in successfully',
-          user: { id: userObj._id, username: userObj.username, role: userObj.role }
-        });
-      });
-    })(req, res, next);*/
   });
+  
   // Logout route
   router.get('/logout', (req: Request, res: Response) => {
     req.logout((err) => {
@@ -106,20 +85,17 @@
       res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
       console.error('Registration Error:', error);
-      res.status(500).json({ message: 'Error registering user', error: (error as Error).message });
+      res.status(500).json({ 
+        message: 'Error registering user', 
+        error: (error as Error).message
+       });
     }
   });
 
   // Middleware to check if user is authenticated
   const isAuthenticated = passport.authenticate('jwt', { session: false });
 
-  /*const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-    if (req.isAuthenticated()) {
-      return next();
-    }
-    res.status(401).json({ message: 'Unauthorized' });
-  };
-  */
+
 
   // Middleware to check if user is a superadmin
   const isSuperAdmin = (req: Request, res: Response, next: NextFunction) => {
