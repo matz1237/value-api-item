@@ -13,7 +13,8 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "uuid": "^10.0.0"
   },
   "scripts": {
     "start": "node --inspect  --trace-warnings -r ts-node/register index.ts",
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/passport-jwt": "^4.0.1",
-    "@types/passport-local": "^1.0.38"
+    "@types/passport-local": "^1.0.38",
+    "@types/uuid": "^10.0.0"
   }
 }

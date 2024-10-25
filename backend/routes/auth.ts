@@ -5,6 +5,7 @@
   import { assignRole } from '../controllers/roleController';
   import User, { IUser } from '../models/user';
   import bcrypt from 'bcryptjs';
+  import { v4 as uuidv4 } from 'uuid';
 
   const router = express.Router();
 
@@ -33,7 +34,11 @@
         },
           JWT_SECRET,
         { 
-          expiresIn: '1d'
+          expiresIn: '1d',
+          algorithm : 'HS256',
+          jwtid : uuidv4(),
+          audience : process.env.JWT_AUDIENCE,
+          issuer : process.env.JWT_ISSUER
         
         }
       );
