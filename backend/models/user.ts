@@ -5,10 +5,13 @@ export interface IUser extends Document {
   username: string;
   password: string;
   role: 'user' | 'supplier' | 'shop' | 'manager' | 'admin' | 'superadmin'; // Make sure these are the exact enum values
-  passwordHistory: string[];
+  passwordHistory: { password: string; createdAt: Date }[];
   passwordChangedAt: Date;
-  resetPasswordToken?: String;
+  resetPasswordToken?: string;
   resetPasswordExpires?: Date;
+  failedLoginAttempts: number; 
+  accountLocked: boolean;
+  lockUntil?: Date;
 }
 
 const UserSchema: Schema = new Schema({
@@ -26,20 +29,44 @@ const UserSchema: Schema = new Schema({
     enum: ['user', 'supplier', 'shop', 'manager', 'admin', 'superadmin'], // Define valid enum values
     required: true ,
     default: 'user', // Default role
-    passwordHistory: [{ 
+  },
+  passwordHistory: [{
+    password: { 
       type: String, 
       required: true 
-    }],
-    passwordChangedAt: { 
+    },
+    createdAt: { 
       type: Date, 
       default: Date.now 
-    },
-    resetPasswordToken: { 
-      type: String 
-    },
-    resetPasswordExpires: { 
-      type: Date 
     }
+  }],
+  passwordChangedAt: { 
+    type: Date 
+  },
+  passwordLastChanged: { 
+    type: Date, 
+    default: Date.now 
+  },
+  passwordExpiresAt: {
+    type: Date,
+    default: () => new Date(+new Date() + 90 * 24 * 60 * 60 * 1000) // 90 days
+  },
+  failedLoginAttempts: {
+    type: Number,
+    default: 0
+  },
+  accountLocked: {
+    type: Boolean,
+    default: false
+  },
+  lockUntil: {
+    type: Date
+  },
+  resetPasswordToken: { 
+    type: String 
+  },
+  resetPasswordExpires: { 
+    type: Date 
   }
 });
 
