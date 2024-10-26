@@ -1,7 +1,8 @@
 //backend/models/user.ts
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document,Types  } from 'mongoose';
 
 export interface IUser extends Document {
+  _id: Types.ObjectId;
   username: string;
   password: string;
   role: 'user' | 'supplier' | 'shop' | 'manager' | 'admin' | 'superadmin'; // Make sure these are the exact enum values
