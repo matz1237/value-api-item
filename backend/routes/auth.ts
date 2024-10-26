@@ -6,6 +6,9 @@
   import User, { IUser } from '../models/user';
   import bcrypt from 'bcryptjs';
   import { v4 as uuidv4 } from 'uuid';
+  import rateLimit from 'express-rate-limit';
+  import crypto from 'crypto';
+
 
   const router = express.Router();
 
@@ -14,8 +17,18 @@
     throw new Error('JWT_SECRET must be defined in environment variables');
   }
 
+  //Login Rate Limit
+  const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // 5 attempts
+    message: 'Too many login attempts, please try again later',
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
+
+
   // Login route
-  router.post('/login', async (req: Request, res: Response, next: NextFunction) => {
+  router.post('/login', loginLimiter, async (req: Request, res: Response, next: NextFunction) => {
     const { username, password } = req.body;
     try{
       const user = await User.findOne({ username });
@@ -28,7 +41,8 @@
         return res.status(401).json({ message: 'Authentication failed: Incorrect username or password' });
       }
       const token = jwt.sign(
-        { id: user._id, 
+        { 
+          id: user._id, 
           username: user.username, 
           role: user.role 
         },
@@ -45,7 +59,11 @@
       return res.status(200).json({
         token,
         message: 'Logged in successfully',
-        user: { id: user._id, username: user.username, role: user.role }
+        user: { 
+          id: user._id, 
+          username: user.username, 
+          role: user.role
+         }
       });
     }catch(err){
       console.error('Login Error:', err);
@@ -63,10 +81,34 @@
       res.status(200).json({ message: 'Logged out successfully' });
     });
   });
+
+  const validatePassword = (password: string): boolean => {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+  
+    return (
+      password.length >= minLength &&
+      hasUpperCase &&
+      hasLowerCase &&
+      hasNumbers &&
+      hasSpecialChar
+    );
+  };
+
+
   // Registration route
   router.post('/register', async (req: Request, res: Response) => {
     try {
       const { username, password } = req.body;
+
+      if (!validatePassword(password)) {
+        return res.status(400).json({
+          message: 'Password must be at least 8 characters long and contain uppercase, lowercase, numbers, and special characters'
+        });
+      }
 
       // Check if user already exists
       const existingUser = await User.findOne({ username });
@@ -75,7 +117,7 @@
       }
 
       // Hash the password
-      const salt = await bcrypt.genSalt(10);
+      const salt = await bcrypt.genSalt(12);
       const hashedPassword = await bcrypt.hash(password, salt);
 
       // Create new user
@@ -162,4 +204,31 @@
   // Route to assign a role to a user (superadmin only)
   router.put('/assign-role',isAuthenticated, isSuperAdmin, assignRole);
 
+  //forgot-password
+  router.post('/forgot-password', async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ message: 'User  not found' });
+      }
+  
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const hashedToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+  
+      user.resetPasswordToken = hashedToken;
+      user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
+      await user.save();
+  
+      // Send email with reset token
+      // Implementation depends on your email service
+      
+      res.status(200).json({ message: 'Password reset email sent' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error in password reset process' });
+    }
+  });
   export default router;
